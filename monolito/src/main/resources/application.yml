@@ -1,0 +1,39 @@
+server:
+  port: 8081 # El Monolito corre internamente en el puerto 8081 (el Gateway en el 8080)
+
+spring:
+  application:
+    name: monolito # Nombre con el que Eureka lo identifica (lb://monolito)
+
+  datasource:
+    # Ajusta el nombre de la BD y tus credenciales locales de MySQL
+    url: jdbc:mysql://localhost:3306/poe_shop_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: "" # <-- CAMBIA ESTO por tu contraseña local de MySQL
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    # Cuando usamos Flyway, Hibernate NO debe crear ni alterar tablas, solo VALIDAR el esquema
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+# Configuración de OpenAPI / Swagger
+springdoc:
+  api-docs:
+    path: /v3/api-docs
