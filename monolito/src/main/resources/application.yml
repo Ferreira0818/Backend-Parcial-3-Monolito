@@ -1,6 +1,6 @@
 server:
   port: 8081 # El Monolito corre internamente en el puerto 8081 (el Gateway en el 8080)
-
+  forward-headers-strategy: framework # Respeta el puerto 8080 del Gateway
 spring:
   application:
     name: monolito # Nombre con el que Eureka lo identifica (lb://monolito)
