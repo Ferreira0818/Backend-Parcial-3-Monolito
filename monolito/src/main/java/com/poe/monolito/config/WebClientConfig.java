@@ -9,8 +9,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class WebClientConfig {
 
     @Bean
-    @LoadBalanced // Integra el cliente con Spring Cloud LoadBalancer y Eureka Service Discovery
-    public WebClient.builder webClientBuilder() {
+    @LoadBalanced
+    public WebClient.Builder webClientBuilder() { // <-- 'Builder' con 'B' mayúscula
         return WebClient.builder();
     }
 }
