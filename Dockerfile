@@ -19,7 +19,7 @@ WORKDIR /app
 # Copiamos solo el ejecutable compilado en la etapa anterior
 COPY --from=build /app/monolito/target/*.jar app.jar
 
-# Exponemos el puerto
+# Puerto
 EXPOSE 8081
 
 # Ejecutamos la aplicación
