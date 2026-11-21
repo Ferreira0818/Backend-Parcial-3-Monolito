@@ -113,6 +113,18 @@
             <version>${datafaker.version}</version>
             <scope>test</scope>
         </dependency>
+
+         <!-- Driver PostgreSQL para Neon en producción -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- Soporte de Flyway 10 para PostgreSQL -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>

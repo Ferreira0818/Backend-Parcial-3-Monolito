@@ -15,20 +15,22 @@ import org.springframework.web.filter.CorsFilter;
 public class CorsConfig {
 
     @Bean
-    @Order(Ordered.HIGHEST_PRECEDENCE) // Máxima prioridad: Intercepta las peticiones OPTIONS antes de enrutarlas
+    @Order(Ordered.HIGHEST_PRECEDENCE)
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         
-        // Permitir envío de cookies y credenciales si fuera necesario
         config.setAllowCredentials(true);
         
-        // Orígenes permitidos: Vite (5173) y Create React App (3000)
-        config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:3000"));
+        // Soporta tanto local (5173, 3000) como cualquier dominio de producción de React (Vercel, Render, Netlify)
+        config.setAllowedOriginPatterns(List.of(
+            "http://localhost:5173", 
+            "http://localhost:3000",
+            "https://*.vercel.app",
+            "https://*.onrender.com",
+            "https://*.netlify.app"
+        ));
         
-        // Permitir todas las cabeceras HTTP
         config.setAllowedHeaders(List.of("*"));
-        
-        // Métodos HTTP soportados en nuestra API REST
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

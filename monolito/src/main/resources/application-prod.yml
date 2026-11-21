@@ -1,0 +1,31 @@
+server:
+  port: ${PORT:8081} # Render asigna dinámicamente el puerto en la variable $PORT
+
+spring:
+  datasource:
+    # Render inyectará la URL completa de Neon aquí
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    # Le indicamos a Flyway que en producción use los scripts de PostgreSQL
+    locations: classpath:db/migration/postgres
+
+# En Render en la nube, si despliegas como un monolito o con Eureka en la nube:
+eureka:
+  client:
+    # Si EUREKA_SERVER_URL no está definida, desactiva el registro para correr autónomo en la nube
+    enabled: ${EUREKA_ENABLED:false}
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
