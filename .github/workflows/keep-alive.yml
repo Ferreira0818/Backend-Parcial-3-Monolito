@@ -1,0 +1,24 @@
+name: Keep Render Alive
+
+on:
+  schedule:
+    # Se ejecuta cada 10 minutos para evitar la suspensión de Render (15 min)
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+    # Habilita el botón manual "Run workflow" en la pestaña Actions de GitHub
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+
+    steps:
+      - name: Ping Monolito Health Endpoint
+        run: |
+          echo "Enviando ping a Render..."
+          curl --fail --show-error --silent \
+            --max-time 90 \
+            --retry 2 \
+            --retry-delay 10 \
+            -w "\nHTTP Status: %{http_code}\n" \
+            "https://backend-parcial-3-monolito.onrender.com/api/v1/health"
