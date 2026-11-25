@@ -24,10 +24,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // Habilitar CORS en el monolito para pruebas locales y Swagger
+            // Habilitar CORS en el monolito para React local y producción (antes cubierto por el Gateway)
             .cors(cors -> cors.configurationSource(request -> {
                 CorsConfiguration config = new CorsConfiguration();
-                config.setAllowedOriginPatterns(List.of("*"));
+                config.setAllowedOriginPatterns(List.of(
+                    "http://localhost:5173",
+                    "http://localhost:3000",
+                    "https://*.vercel.app",
+                    "https://*.onrender.com",
+                    "https://*.netlify.app"
+                ));
                 config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
                 config.setAllowedHeaders(List.of("*"));
                 config.setAllowCredentials(true);
