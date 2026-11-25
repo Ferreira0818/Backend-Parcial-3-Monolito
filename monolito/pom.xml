@@ -20,7 +20,6 @@
 
     <properties>
         <java.version>17</java.version>
-        <spring-cloud.version>2023.0.3</spring-cloud.version>
         <springdoc.version>2.6.0</springdoc.version>
         <datafaker.version>2.2.2</datafaker.version>
         <!-- Previene el bug de Eclipse/VS Code m2e -->
@@ -80,13 +79,6 @@
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-mysql</artifactId>
         </dependency>
-
-        <!-- 9. Cliente Eureka: Registro automático del servicio 'monolito' -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-        </dependency>
-
         <!-- 10. Swagger / OpenAPI UI: Generación del contrato /v3/api-docs -->
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -126,18 +118,6 @@
             <artifactId>flyway-database-postgresql</artifactId>
         </dependency>
     </dependencies>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <build>
         <plugins>

@@ -1,9 +1,10 @@
 server:
-  port: 8081 # El Monolito corre internamente en el puerto 8081 (el Gateway en el 8080)
-  forward-headers-strategy: framework # Respeta el puerto 8080 del Gateway
+  port: 8080 # Puerto público local directo (sin Gateway)
+  forward-headers-strategy: framework # Respeta headers de proxy inverso (ej. HTTPS en Render / HATEOAS)
+
 spring:
   application:
-    name: monolito # Nombre con el que Eureka lo identifica (lb://monolito)
+    name: monolito
 
   datasource:
     # Ajusta el nombre de la BD y tus credenciales locales de MySQL
@@ -24,14 +25,7 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
-    locations: classpath:db/migration
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-  instance:
-    prefer-ip-address: true
+    locations: classpath:db/migration/mysql
 
 # Configuración de OpenAPI / Swagger
 springdoc:
