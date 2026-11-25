@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/contact")
@@ -46,5 +47,12 @@ public class ContactMessageController {
             @PathVariable Long id,
             @Valid @RequestBody UpdateMessageStatusRequest request) {
         return ResponseEntity.ok(contactMessageService.updateStatus(id, request));
+    }
+
+    // Eliminar mensaje/ticket de soporte (Admin): DELETE /api/v1/contact/{id}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> deleteMessage(@PathVariable Long id) {
+        contactMessageService.deleteMessage(id);
+        return ResponseEntity.ok(Map.of("message", "Mensaje eliminado correctamente"));
     }
 }

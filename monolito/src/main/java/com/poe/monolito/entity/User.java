@@ -33,6 +33,10 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean active = true;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
@@ -46,6 +50,9 @@ public class User {
         }
         if (role == null) {
             role = Role.ROLE_USER;
+        }
+        if (active == null) {
+            active = true;
         }
     }
 }
