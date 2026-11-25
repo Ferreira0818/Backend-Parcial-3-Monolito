@@ -20,7 +20,7 @@ WORKDIR /app
 COPY --from=build /app/monolito/target/*.jar app.jar
 
 # Puerto
-EXPOSE 8081
+EXPOSE 8080
 
 # Ejecutamos la aplicación
 ENTRYPOINT ["java", "-jar", "app.jar"]
