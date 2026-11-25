@@ -4,14 +4,24 @@ import com.poe.monolito.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    // Buscar usuario por correo para login o reseteo de contraseña
-    Optional<User> findByEmail(String email);
+    // Listar usuarios activos ordenados por ID para el panel de administración
+    List<User> findAllByActiveTrueOrderByIdAsc();
 
-    // Comprobar existencia rápida al registrar
+    // Buscar usuario activo por ID
+    Optional<User> findByIdAndActiveTrue(Long id);
+
+    // Buscar usuario activo por correo para login o reseteo de contraseña
+    Optional<User> findByEmailAndActiveTrue(String email);
+
+    // Comprobar existencia rápida por correo (incluye inactivos para respetar UNIQUE en BD)
     boolean existsByEmail(String email);
+
+    // Mantenido para compatibilidad temporal hasta completar la Etapa 2
+    Optional<User> findByEmail(String email);
 }
