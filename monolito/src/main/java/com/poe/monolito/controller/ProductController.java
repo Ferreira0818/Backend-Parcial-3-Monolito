@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -37,11 +38,26 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    // Editar producto completo (Admin): PUT /api/v1/products/{id}
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductResponse> updateProduct(
+            @PathVariable Long id,
+            @Valid @RequestBody ProductRequest request) {
+        return ResponseEntity.ok(productService.updateProduct(id, request));
+    }
+
     // Actualizar stock: PATCH /api/v1/products/{id}/stock?quantity=500
     @PatchMapping("/{id}/stock")
     public ResponseEntity<ProductResponse> updateStock(
             @PathVariable Long id,
             @RequestParam Integer quantity) {
         return ResponseEntity.ok(productService.updateStock(id, quantity));
+    }
+
+    // Eliminar (desactivar) producto (Admin): DELETE /api/v1/products/{id}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> deleteProduct(@PathVariable Long id) {
+        productService.deleteProduct(id);
+        return ResponseEntity.ok(Map.of("message", "Producto eliminado correctamente"));
     }
 }

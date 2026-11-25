@@ -3,6 +3,7 @@ package com.poe.monolito.service;
 import com.poe.monolito.dto.ProductRequest;
 import com.poe.monolito.dto.ProductResponse;
 import com.poe.monolito.entity.Product;
+import com.poe.monolito.repository.CartItemRepository;
 import com.poe.monolito.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final CartItemRepository cartItemRepository;
 
     // Obtener catálogo público para la tienda en React
     @Transactional(readOnly = true)
@@ -52,6 +54,45 @@ public class ProductService {
 
         Product saved = productRepository.save(product);
         return mapToResponse(saved);
+    }
+
+    // Editar datos completos de un orbe (Admin)
+    @Transactional
+    public ProductResponse updateProduct(Long id, ProductRequest request) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Orbe no encontrado"));
+
+        if (productRepository.existsByNameAndIdNot(request.name(), id)) {
+            throw new IllegalArgumentException("Ya existe otro orbe registrado con ese nombre");
+        }
+
+        product.setName(request.name());
+        product.setPrice(request.price());
+        product.setImageUrl(request.imageUrl());
+        product.setAltText(request.altText());
+        product.setStock(request.stock());
+        if (request.active() != null) {
+            product.setActive(request.active());
+        }
+
+        Product updated = productRepository.save(product);
+
+        if (Boolean.FALSE.equals(updated.getActive())) {
+            cartItemRepository.deleteByProductId(id);
+        }
+
+        return mapToResponse(updated);
+    }
+
+    // Eliminar (Soft Delete) un orbe del catálogo (Admin)
+    @Transactional
+    public void deleteProduct(Long id) {
+        Product product = productRepository.findByIdAndActiveTrue(id)
+                .orElseThrow(() -> new IllegalArgumentException("Orbe no encontrado o ya deshabilitado"));
+
+        product.setActive(false);
+        productRepository.save(product);
+        cartItemRepository.deleteByProductId(id);
     }
 
     // Actualizar stock de un orbe

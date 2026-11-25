@@ -18,4 +18,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     // Comprobar existencia por nombre
     boolean existsByName(String name);
+
+    // Comprobar si otro producto distinto ya usa ese nombre (al editar)
+    boolean existsByNameAndIdNot(String name, Long id);
 }

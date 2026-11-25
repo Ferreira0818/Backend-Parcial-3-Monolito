@@ -54,6 +54,10 @@ public class OrderService {
             Product product = cartItem.getProduct();
             int requestedQuantity = cartItem.getQuantity();
 
+            if (!Boolean.TRUE.equals(product.getActive())) {
+                throw new IllegalArgumentException("El orbe ya no está disponible para la venta: " + product.getName());
+            }
+
             // Validación estricta de stock disponible en el alijo
             if (product.getStock() < requestedQuantity) {
                 throw new IllegalArgumentException("Stock insuficiente para: " + product.getName() 
