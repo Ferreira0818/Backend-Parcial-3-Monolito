@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoE Shop API — Monolito</title>
+    <style>
+        :root {
+            --bg: #0e1015;
+            --card: #161a23;
+            --border: #2a3040;
+            --gold: #d4af37;
+            --gold-hover: #e5c453;
+            --text: #e8ecf2;
+            --muted: #9aa3b2;
+            --green: #22c55e;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            background: radial-gradient(circle at top, #1b2030 0%, var(--bg) 60%);
+            color: var(--text);
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 1.5rem;
+        }
+        .card {
+            width: 100%;
+            max-width: 620px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 2rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        h1 {
+            font-size: 1.5rem;
+            color: var(--gold);
+            letter-spacing: 0.3px;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            font-size: 0.8rem;
+            padding: 0.3rem 0.7rem;
+            border-radius: 999px;
+            background: rgba(34, 197, 94, 0.12);
+            border: 1px solid rgba(34, 197, 94, 0.35);
+            color: #86efac;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+        }
+        .subtitle {
+            color: var(--muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+        .links {
+            display: grid;
+            gap: 0.75rem;
+        }
+        a.link-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text);
+            background: #1c212d;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.9rem 1.1rem;
+            transition: border-color 0.15s, transform 0.15s;
+        }
+        a.link-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-1px);
+        }
+        a.link-card.primary {
+            border-color: rgba(212, 175, 55, 0.55);
+            background: rgba(212, 175, 55, 0.08);
+        }
+        .link-title { font-weight: 600; font-size: 0.98rem; }
+        .link-desc { color: var(--muted); font-size: 0.82rem; margin-top: 0.15rem; }
+        .path {
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 0.8rem;
+            color: var(--gold);
+        }
+        footer {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 0.8rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <main class="card">
+        <div class="header">
+            <h1>PoE Shop API — Monolito</h1>
+            <span class="badge" id="status-badge">
+                <span class="dot"></span>
+                <span id="status-text">Servicio activo</span>
+            </span>
+        </div>
+
+        <p class="subtitle">
+            Backend REST para la tienda de orbes y divisas de <strong>Path of Exile 1</strong>.
+            Selecciona un recurso para explorar o verificar la API:
+        </p>
+
+        <nav class="links">
+            <a class="link-card primary" href="/swagger-ui.html">
+                <div>
+                    <div class="link-title">Documentación Swagger UI</div>
+                    <div class="link-desc">Explora y prueba todos los endpoints de la API</div>
+                </div>
+                <span class="path">/swagger-ui.html</span>
+            </a>
+
+            <a class="link-card" href="/v3/api-docs">
+                <div>
+                    <div class="link-title">Contrato OpenAPI (JSON)</div>
+                    <div class="link-desc">Especificación técnica generada por SpringDoc</div>
+                </div>
+                <span class="path">/v3/api-docs</span>
+            </a>
+
+            <a class="link-card" href="/api/v1/health">
+                <div>
+                    <div class="link-title">Health Check</div>
+                    <div class="link-desc">Estado del servicio monitoreado por el PingBot</div>
+                </div>
+                <span class="path">/api/v1/health</span>
+            </a>
+        </nav>
+
+        <footer>
+            Spring Boot 3 · Java 17 · MySQL (Local) / PostgreSQL Neon (Prod)
+        </footer>
+    </main>
+
+    <script>
+        fetch('/api/v1/health')
+            .then(r => r.ok ? r.json() : Promise.reject())
+            .then(data => {
+                document.getElementById('status-text').textContent =
+                    `${data.service}: ${data.status}`;
+            })
+            .catch(() => {
+                document.getElementById('status-text').textContent = 'Estado no disponible';
+            });
+    </script>
+</body>
+</html>
