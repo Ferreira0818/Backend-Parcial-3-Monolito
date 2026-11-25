@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -17,6 +18,12 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+
+    // Panel Admin: listar todos los usuarios registrados activos
+    @GetMapping
+    public ResponseEntity<List<AuthResponse>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
 
     @GetMapping("/{userId}")
     public ResponseEntity<AuthResponse> getProfile(@PathVariable Long userId) {
@@ -38,5 +45,12 @@ public class UserController {
             @Valid @RequestBody ChangePasswordRequest request) {
         userService.changePassword(userId, request);
         return ResponseEntity.ok(Map.of("message", "Contraseña actualizada exitosamente"));
+    }
+
+    // Panel Admin: eliminar (desactivar) un usuario no administrador
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Map<String, String>> deleteUser(@PathVariable Long userId) {
+        userService.deleteUser(userId);
+        return ResponseEntity.ok(Map.of("message", "Usuario eliminado correctamente"));
     }
 }

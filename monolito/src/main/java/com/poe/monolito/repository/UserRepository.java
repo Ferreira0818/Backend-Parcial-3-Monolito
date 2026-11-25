@@ -21,7 +21,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // Comprobar existencia rápida por correo (incluye inactivos para respetar UNIQUE en BD)
     boolean existsByEmail(String email);
-
-    // Mantenido para compatibilidad temporal hasta completar la Etapa 2
-    Optional<User> findByEmail(String email);
 }

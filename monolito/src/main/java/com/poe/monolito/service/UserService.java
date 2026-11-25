@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -31,6 +33,7 @@ public class UserService {
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
                 .role(Role.ROLE_USER)
+                .active(true)
                 .build();
 
         User savedUser = userRepository.save(user);
@@ -41,12 +44,12 @@ public class UserService {
                 .build();
         cartRepository.save(cart);
 
-        return new AuthResponse(savedUser.getId(), savedUser.getName(), savedUser.getEmail(), savedUser.getRole());
+        return mapToAuthResponse(savedUser);
     }
 
     @Transactional(readOnly = true)
     public AuthResponse login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.email())
+        User user = userRepository.findByEmailAndActiveTrue(request.email())
                 .orElseThrow(() -> new IllegalArgumentException("Credenciales inválidas"));
 
         // Comprobamos la contraseña ingresada contra el hash BCrypt de la BD
@@ -54,12 +57,12 @@ public class UserService {
             throw new IllegalArgumentException("Credenciales inválidas");
         }
 
-        return new AuthResponse(user.getId(), user.getName(), user.getEmail(), user.getRole());
+        return mapToAuthResponse(user);
     }
 
     @Transactional
     public void changePassword(Long userId, ChangePasswordRequest request) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndActiveTrue(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
         // Validar contraseña actual con BCrypt
@@ -75,18 +78,18 @@ public class UserService {
 
     @Transactional
     public AuthResponse updateProfile(Long userId, UpdateProfileRequest request) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndActiveTrue(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
         user.setName(request.name());
         User updated = userRepository.save(user);
 
-        return new AuthResponse(updated.getId(), updated.getName(), updated.getEmail(), updated.getRole());
+        return mapToAuthResponse(updated);
     }
 
     @Transactional
     public void resetPassword(ResetPasswordRequest request) {
-        User user = userRepository.findByEmail(request.email())
+        User user = userRepository.findByEmailAndActiveTrue(request.email())
                 .orElseThrow(() -> new IllegalArgumentException("No existe ninguna cuenta asociada a este correo"));
 
         user.setPassword(passwordEncoder.encode(request.newPassword()));
@@ -95,9 +98,38 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public AuthResponse getProfile(Long userId) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndActiveTrue(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
+        return mapToAuthResponse(user);
+    }
+
+    // Listado completo de usuarios activos para el panel Admin
+    @Transactional(readOnly = true)
+    public List<AuthResponse> getAllUsers() {
+        return userRepository.findAllByActiveTrueOrderByIdAsc()
+                .stream()
+                .map(this::mapToAuthResponse)
+                .toList();
+    }
+
+    // Soft Delete de usuario no administrador y limpieza de su carrito
+    @Transactional
+    public void deleteUser(Long userId) {
+        User user = userRepository.findByIdAndActiveTrue(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        if (user.getRole() == Role.ROLE_ADMIN) {
+            throw new IllegalArgumentException("No se puede eliminar un usuario administrador");
+        }
+
+        user.setActive(false);
+        userRepository.save(user);
+
+        cartRepository.findByUserId(userId).ifPresent(cartRepository::delete);
+    }
+
+    private AuthResponse mapToAuthResponse(User user) {
         return new AuthResponse(user.getId(), user.getName(), user.getEmail(), user.getRole());
     }
 }
