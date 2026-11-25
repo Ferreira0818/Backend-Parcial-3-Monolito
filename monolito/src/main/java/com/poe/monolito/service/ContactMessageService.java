@@ -66,6 +66,15 @@ public class ContactMessageService {
         return mapToResponse(updated);
     }
 
+    // Eliminar permanentemente un mensaje/ticket de soporte (Admin)
+    @Transactional
+    public void deleteMessage(Long id) {
+        ContactMessage message = contactMessageRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Mensaje de contacto no encontrado"));
+
+        contactMessageRepository.delete(message);
+    }
+
     private ContactResponse mapToResponse(ContactMessage entity) {
         return new ContactResponse(
                 entity.getId(),
